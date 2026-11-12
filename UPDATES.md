@@ -23,6 +23,27 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 18:05 | Person A / All | Gemini API Key Configured & Live Ingest Tested
+- What changed:
+  - Configured `GEMINI_API_KEY` in `.env` (gitignored, per AGENTS.md Hard Rule #10).
+  - Sanitized `.env.example` with placeholder to prevent accidental secret leak.
+  - Updated default model in `backend/app/llm.py` to `gemini-3.5-flash-lite` (verified available on current Google AI Studio API).
+  - Added `load_dotenv()` on startup in `backend/app/main.py` and `tests/test_ingest.py`.
+  - Added sample image fixture `data/demo/sample.png` and verified full OCR pipeline end-to-end (POST `/patients/{pid}/documents` extracted verbatim text via Gemini vision).
+  - All 49 pytest tests passing (0 skipped, 0 failed).
+- Files touched:
+  - `.env`
+  - `.env.example`
+  - `backend/app/llm.py`
+  - `backend/app/main.py`
+  - `tests/test_api.py`
+  - `tests/test_ingest.py`
+  - `data/demo/sample.png`
+  - `UPDATES.md`
+- Schema or API impact: none
+- Needs from others: none
+- Next: Proceed to Phase 1 extraction tasks A4–A6.
+
 ### 2026-11-12 18:00 | Person C / All | Healthcare Dashboard Theme Restyle (Theme-Only)
 - What changed:
   - **Restyled Frontend Theme**:

@@ -26,6 +26,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import UUID
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field

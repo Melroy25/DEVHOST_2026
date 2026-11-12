@@ -11,6 +11,10 @@ from pathlib import Path
 
 import pytest
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 DEMO_DIR = Path(__file__).parent.parent / "data" / "demo"
 
 # ---------------------------------------------------------------------------

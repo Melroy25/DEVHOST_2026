@@ -50,7 +50,7 @@ def _get_client() -> Any:
 
 
 # Default model — change here only.
-_MODEL = "gemini-2.0-flash"
+_MODEL = "gemini-3.5-flash-lite"
 
 T = TypeVar("T", bound=BaseModel)
 

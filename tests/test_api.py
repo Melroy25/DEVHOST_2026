@@ -19,6 +19,7 @@ DEMO_DIR = Path(__file__).parent.parent / "data" / "demo"
 def setup_db():
     with db.get_connection() as conn:
         db.seed_demo_data(conn)
+        conn.execute("DELETE FROM caretaker_links WHERE patient_id = ?", (str(db.DEMO_PATIENT_JHON_ID),))
 
 
 @pytest.fixture
