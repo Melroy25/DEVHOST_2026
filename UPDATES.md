@@ -23,6 +23,62 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 17:46 | All | Two-Portal System with Caretaker Access Control (Schema v0.3.0)
+- What changed:
+  - **Schema bumped to v0.3.0 (agreed)**:
+    - Added `UserRole` enum (`patient`, `caretaker`) and `User` model (`id`, `name`, `role`, `created_at`).
+    - Added `CaretakerPermission` enum (`view`, `contribute`) and `CaretakerLink` model (`id`, `patient_id`, `caretaker_user_id`, `permission`, `created_at`, `revoked_at`).
+    - Added `owner_user_id` to `Patient`, `uploaded_by` to `Document`, and set `Correction.corrected_by` to user UUID.
+    - Updated `ARCHITECTURE.md` data model and access control sections.
+  - **Auth & Access Control (`backend/app/auth.py`)**:
+    - Centralized `get_current_user` dependency reading `X-User-Id` request header.
+    - `can_access(user, patient_id, need)` enforcing:
+      - Patient owner: read, write, manage
+      - Caretaker (view): read only
+      - Caretaker (contribute): read, write (no manage)
+      - Revoked / Stranger: 403 Forbidden
+    - Seeded demo users on startup: Jhon (patient), Maria (caretaker), Sam (caretaker), and Jhon's patient record.
+  - **API Endpoints (`backend/app/main.py`)**:
+    - `GET /users`: demo user list for login selection.
+    - `GET /me`: authenticated user profile.
+    - `GET /me/patients`: accessible patients with granted permissions.
+    - `GET/POST/PATCH/DELETE /patients/{pid}/caretakers`: caretaker management (owner only; DELETE performs soft revocation via `revoked_at`).
+    - Scoped existing document and patient routes with `can_access` and recorded `uploaded_by`.
+  - **Smart Pagination & Offline Safety (`backend/app/ingest/`)**:
+    - `.txt` pagination splits on form feeds, `RECORD #` markers, or chunks at ~3,000 characters.
+    - Digital PDF, DOCX, and TXT parse fully offline without Gemini API key; image/scan upload returns clear error when key is absent.
+    - Transactional upload ensures failed parsing leaves zero orphan DB rows.
+  - **Frontend Two-Portal Experience (`frontend/`)**:
+    - Demo user login switcher persisting `X-User-Id`.
+    - Patient portal (`/patient`) with Document Upload, Document Viewer, Caretaker management tab (grant/modify/revoke access).
+    - Caretaker portal (`/caretaker`) with "My Patients" directory, permission badges, and empty-state messaging.
+    - Shared `PatientRecordView` component with permission-driven UI controls (hiding uploads for view-only, hiding caretaker tab for caretakers).
+    - Placeholder cards for Facts/Timeline, Flags, Q&A, and Summary clearly labeled "Coming soon" with zero fake clinical data.
+  - **Testing**:
+    - Added `tests/test_access.py` covering owner, view caretaker, contribute caretaker, revoked caretaker, stranger, and 404/403 branches.
+    - Updated `tests/test_api.py` covering full multi-user caretaker lifecycle.
+    - 48 passed, 1 skipped (offline OCR), 0 failed.
+- Files touched:
+  - `backend/app/schema.py`
+  - `backend/app/db.py`
+  - `backend/app/auth.py`
+  - `backend/app/main.py`
+  - `backend/app/ingest/parsers.py`
+  - `backend/app/ingest/router.py`
+  - `tests/test_access.py`
+  - `tests/test_api.py`
+  - `tests/test_db.py`
+  - `frontend/src/api.js`
+  - `frontend/src/App.jsx`
+  - `frontend/src/index.css`
+  - `ARCHITECTURE.md`
+  - `README.md`
+  - `TASKS.md`
+  - `UPDATES.md`
+- Schema or API impact: Schema v0.3.0 agreed and enforced across all routes.
+- Needs from others: none
+- Next: Phase 1 extraction tasks A4–A6.
+
 ### 2026-11-12 17:35 | Person C / All | Push to GitHub Repository
 - What changed:
   - Added `.gitignore` protecting secrets (`.env`), SQLite databases (`data/records.db*`), uploaded files (`data/uploads/`), test caches, and `node_modules/`.

@@ -85,6 +85,12 @@ def ingest_document(
         return ingest_txt(path)
 
     if handler == "image":
+        import os
+        if not os.environ.get("GEMINI_API_KEY", "").strip():
+            raise ValueError(
+                "Image and scan documents require GEMINI_API_KEY for vision OCR. "
+                "Please upload a digital PDF, DOCX, or TXT file, or set GEMINI_API_KEY in .env."
+            )
         from backend.app.ingest.ocr import ingest_image  # noqa: PLC0415
         return ingest_image(path)
 

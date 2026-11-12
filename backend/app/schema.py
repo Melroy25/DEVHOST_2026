@@ -1,10 +1,11 @@
-# schema.py — SHARED CONTRACT v0.2.1
+# schema.py — SHARED CONTRACT v0.3.0
 # Change only after team agreement. Bump version and log in UPDATES.md.
 #
 # Version history:
 #   v0.1.0  2026-11-12  Initial schema (Phase 0, all)
 #   v0.2.0  2026-11-12  AGREED — see UPDATES.md for change list
 #   v0.2.1  2026-11-12  AGREED — Fact.rejected; apply_correction semantics fix; active_facts()
+#   v0.3.0  2026-11-12  AGREED — User, CaretakerLink, Patient.owner_user_id, Document.uploaded_by
 
 from __future__ import annotations
 
@@ -19,6 +20,20 @@ from pydantic import BaseModel, Field
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
+
+
+class UserRole(str, Enum):
+    """The role of an application user."""
+
+    patient = "patient"
+    caretaker = "caretaker"
+
+
+class CaretakerPermission(str, Enum):
+    """Permission level granted to a caretaker for a patient record."""
+
+    view = "view"              # Read-only access to facts, documents, timeline
+    contribute = "contribute"  # Can read, upload documents, and submit corrections
 
 
 class FactType(str, Enum):
@@ -111,11 +126,35 @@ class Source(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+class User(BaseModel):
+    """An authenticated user in the system (patient or caretaker)."""
+
+    id: UUID = Field(default_factory=uuid4)
+    name: str = Field(..., min_length=1)
+    role: UserRole
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CaretakerLink(BaseModel):
+    """Access grant connecting a caretaker user to a patient's records."""
+
+    id: UUID = Field(default_factory=uuid4)
+    patient_id: UUID = Field(..., description="The patient whose record is shared.")
+    caretaker_user_id: UUID = Field(..., description="The user granted caretaker access.")
+    permission: CaretakerPermission = CaretakerPermission.view
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    revoked_at: datetime | None = Field(
+        default=None,
+        description="When access was revoked. Null means active access.",
+    )
+
+
 class Patient(BaseModel):
     """A patient whose documents are managed by the system."""
 
     id: UUID = Field(default_factory=uuid4)
     name: str = Field(..., min_length=1)
+    owner_user_id: UUID = Field(..., description="The user account that owns this patient record.")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -126,6 +165,7 @@ class Document(BaseModel):
     patient_id: UUID = Field(..., description="Patient this document belongs to.")
     filename: str = Field(..., min_length=1)
     doc_type: DocType = DocType.other
+    uploaded_by: UUID = Field(..., description="User ID of the uploader.")
     uploaded_at: datetime = Field(default_factory=datetime.utcnow)
     page_count: int = Field(..., ge=1, description="Total number of pages extracted.")
 
@@ -189,9 +229,6 @@ class Fact(BaseModel):
     # Audit
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    # NOTE: flags are NOT stored here.
-    # To find flags for this fact, query Flag where fact_ids contains this id.
-
 
 class Correction(BaseModel):
     """A human reviewer's correction to a stored Fact.
@@ -207,12 +244,12 @@ class Correction(BaseModel):
 
     id: UUID = Field(default_factory=uuid4)
     fact_id: UUID = Field(..., description="The Fact being corrected.")
-    corrected_by: str = Field(..., description="Username or reviewer ID.")
+    corrected_by: UUID = Field(..., description="User ID of the reviewer.")
 
     # Only the fields that changed; use the original for everything else.
     # Unknown keys (not present on Fact) are rejected by apply_correction().
     new_fields: dict[str, Any] = Field(
-        ...,
+        default_factory=dict,
         description="Partial dict of Fact fields with their corrected values.",
     )
     reason: str = Field(..., min_length=1, description="Why the correction was made.")
@@ -223,17 +260,6 @@ class Correction(BaseModel):
             "apply_correction() will mark the effective fact as rejected=True, "
             "excluding it from clinical outputs. The original is always kept."
         ),
-    )
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    new_fields: dict[str, Any] = Field(
-        ...,
-        description="Partial dict of Fact fields with their corrected values.",
-    )
-    reason: str = Field(..., min_length=1, description="Why the correction was made.")
-    rejected: bool = Field(
-        default=False,
-        description="True when a senior reviewer has rejected this correction. "
-                    "Rejected corrections are excluded from apply_correction().",
     )
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
@@ -281,40 +307,12 @@ _MUTABLE_FACT_FIELDS: frozenset[str] = frozenset(Fact.model_fields.keys()) - _IM
 
 
 def apply_correction(fact: Fact, correction: Correction) -> Fact:
-    """Return the effective Fact after applying *correction*.
-
-    Semantics (v0.2.1):
-    - The original ``fact`` is NEVER mutated; a new Fact instance is always
-      returned.
-    - If ``correction.rejected`` is True the reviewer has declared the extracted
-      fact is WRONG. The returned fact is a copy of the original with
-      ``rejected=True``. It will be excluded from clinical outputs by
-      ``active_facts()``, but the original evidence is preserved in the DB and
-      shown struck-through on the review screen.
-    - If ``correction.rejected`` is False, ``new_fields`` are merged onto the
-      original fact's data and a corrected copy is returned (rejected=False).
-    - Keys in ``new_fields`` that are not valid mutable Fact fields raise
-      ``ValueError`` — unknown or immutable keys are never silently ignored.
-    - ``rejected`` itself cannot appear in ``new_fields``; it is controlled
-      exclusively via ``correction.rejected``.
-
-    Args:
-        fact: The stored, original Fact (never modified).
-        correction: The Correction to apply.
-
-    Returns:
-        A new Fact instance representing the effective (post-correction) state.
-
-    Raises:
-        ValueError: If new_fields targets an unknown or immutable field.
-    """
+    """Return the effective Fact after applying *correction*."""
     if correction.rejected:
-        # Mark the fact as wrong; original data unchanged except rejected flag.
         effective_data = fact.model_dump()
         effective_data["rejected"] = True
         return Fact.model_validate(effective_data)
 
-    # Validate new_fields keys before touching anything.
     unknown_keys = set(correction.new_fields.keys()) - _MUTABLE_FACT_FIELDS
     if unknown_keys:
         raise ValueError(
@@ -323,25 +321,13 @@ def apply_correction(fact: Fact, correction: Correction) -> Fact:
             f"{sorted(_MUTABLE_FACT_FIELDS)}."
         )
 
-    # Build the effective fact without touching the original object.
     effective_data = fact.model_dump()
     effective_data.update(correction.new_fields)
     return Fact.model_validate(effective_data)
 
 
 def active_facts(facts: list[Fact]) -> list[Fact]:
-    """Return only the facts that have not been rejected by a reviewer.
-
-    Timeline, flags, Q&A, and summary MUST call this before processing.
-    The review screen bypasses this filter so rejected facts are still visible
-    (struck-through) and the original source evidence is never lost.
-
-    Args:
-        facts: Mixed list of effective (post-correction) Fact objects.
-
-    Returns:
-        A new list containing only facts where ``rejected`` is False.
-    """
+    """Return only the facts that have not been rejected by a reviewer."""
     return [f for f in facts if not f.rejected]
 
 
@@ -368,9 +354,9 @@ class FlagList(BaseModel):
 class CorrectionRequest(BaseModel):
     """Body for POST /facts/{fid}/correct."""
 
-    corrected_by: str
-    new_fields: dict[str, Any]
+    new_fields: dict[str, Any] = Field(default_factory=dict)
     reason: str
+    rejected: bool = False
 
 
 class AskRequest(BaseModel):
@@ -383,5 +369,5 @@ class AskResponse(BaseModel):
     """Answer from the Q&A module."""
 
     answer: str
-    fact_ids: list[UUID]  # facts cited
-    declined: bool = False  # True when the system refuses to answer
+    fact_ids: list[UUID]
+    declined: bool = False

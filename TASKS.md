@@ -5,8 +5,8 @@ Rename Person A/B/C to your names.
 
 ## Phase 0: Together (first hour)
 - [x] Create repo, folders, `.env.example`, `requirements.txt`  ← DONE (agent, 2026-11-12)
-- [x] Write and agree `backend/app/schema.py` (Fact, Correction, Flag, Source). **Nobody builds until this is done.**  ← v0.2.0 AGREED (2026-11-12)
-- [ ] Agree the API list in ARCHITECTURE.md
+- [x] Write and agree `backend/app/schema.py` (Fact, Correction, Flag, Source). **Nobody builds until this is done.**  ← v0.3.0 AGREED (User, CaretakerLink, Patient.owner_user_id, Document.uploaded_by)
+- [x] Agree the API list in ARCHITECTURE.md  ← v0.3.0 Caretaker & Auth API added (2026-11-12)
 - [ ] Decide the demo cast of 5 patients (see Phase 5)
 
 ## Person A: Extraction (ingest, extract, db, llm)

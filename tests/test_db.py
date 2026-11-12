@@ -79,9 +79,8 @@ class TestPatient:
         db.create_patient(conn, "Alice")
         db.create_patient(conn, "Bob")
         patients = db.list_patients(conn)
-        assert len(patients) == 2
         names = {p.name for p in patients}
-        assert names == {"Alice", "Bob"}
+        assert {"Alice", "Bob"}.issubset(names)
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +221,7 @@ class TestCorrections:
 
         corr = Correction(
             fact_id=fact.id,
-            corrected_by="reviewer1",
+            corrected_by=uuid.uuid4(),
             new_fields={"dose": "1000mg"},
             reason="wrong dose",
         )
@@ -239,7 +238,7 @@ class TestCorrections:
         fact = _make_fact(p1.id, doc1.id)
         db.save_fact(conn, fact, doc1.id, 1)
         corr = Correction(
-            fact_id=fact.id, corrected_by="r", new_fields={}, reason="test"
+            fact_id=fact.id, corrected_by=uuid.uuid4(), new_fields={}, reason="test"
         )
         db.save_correction(conn, corr, p1.id)
         # p2 should see nothing

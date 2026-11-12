@@ -67,18 +67,62 @@ def ingest_docx(path: str | Path) -> PageList:
 
 
 def ingest_txt(path: str | Path) -> PageList:
-    """Read a plain-text file as a single page.
+    """Read a plain-text file into meaningful pages.
+
+    Pagination rules:
+    1. If form feed (`\\f`) markers exist, split on them.
+    2. Else if "RECORD #" markers exist (e.g. RECORD #1, Record #2), split on them.
+    3. Fallback: chunk roughly ~3,000 characters per page at paragraph/line boundaries.
 
     Args:
         path: Path to the text file.
 
     Returns:
-        List with a single (1, text) tuple.
+        List of (page_no, text) tuples with 1-based page numbering.
     """
+    import re
+
     path = Path(path)
-    logger.info("Ingesting TXT: %s", path.name)
-    text = _clean(path.read_text(encoding="utf-8", errors="replace"))
-    return [(1, text)]
+    logger.info("Ingesting TXT with smart pagination: %s", path.name)
+    raw = path.read_text(encoding="utf-8", errors="replace")
+
+    chunks: list[str] = []
+
+    if "\f" in raw:
+        chunks = [c for c in raw.split("\f") if c.strip()]
+    elif re.search(r"(?i)RECORD\s*#", raw):
+        # Split on RECORD # while keeping the delimiter
+        parts = re.split(r"(?i)(?=RECORD\s*#)", raw)
+        chunks = [p for p in parts if p.strip()]
+    elif len(raw) > 3500:
+        # Chunk roughly ~3,000 characters per page
+        lines = raw.splitlines(keepends=True)
+        current_chunk: list[str] = []
+        current_len = 0
+        for line in lines:
+            current_chunk.append(line)
+            current_len += len(line)
+            if current_len >= 3000:
+                chunks.append("".join(current_chunk))
+                current_chunk = []
+                current_len = 0
+        if current_chunk:
+            chunks.append("".join(current_chunk))
+    else:
+        chunks = [raw]
+
+    pages: PageList = []
+    page_no = 1
+    for chunk in chunks:
+        cleaned = _clean(chunk)
+        if cleaned:
+            pages.append((page_no, cleaned))
+            page_no += 1
+
+    if not pages:
+        pages = [(1, "")]
+
+    return pages
 
 
 # ---------------------------------------------------------------------------

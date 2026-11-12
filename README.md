@@ -2,7 +2,16 @@
 
 Turn a patient's pile of medical documents into a verified, dated clinical history.
 
-Every fact links to its source passage with verifiable quotes. Contradictions and gaps are flagged, never silently resolved. The system never diagnoses, never invents facts, and never gives treatment advice.
+Features two specialized portals (Patient Portal & Caretaker Portal) sharing a unified backend with role-based access control, document ingestion, and verifiable quote tracking.
+
+---
+
+## Demo Accounts
+
+The application automatically seeds three demo personas:
+- **Jhon (Patient)**: Owns health record `Jhon`, uploads documents, grants/revokes caretaker access.
+- **Maria (Caretaker)**: Can be granted `view` (read-only) or `contribute` (read + upload) access by Jhon.
+- **Sam (Caretaker)**: Demonstrates uninvited/stranger isolation and independent caretaker workflows.
 
 ---
 
@@ -13,11 +22,13 @@ Every fact links to its source passage with verifiable quotes. Contradictions an
 - Node.js 18+ and npm
 
 ### 1. Environment Configuration
-Copy `.env.example` to `.env` and fill in your Gemini API key (needed for OCR and extraction):
+Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
 *(On Windows: `copy .env.example .env`)*
+
+Optional: Add your `GEMINI_API_KEY` for OCR on scanned pages. Note that plain text, digital PDFs, and DOCX files ingest fully offline without an API key.
 
 ### 2. Backend Setup
 Install Python dependencies:
@@ -26,7 +37,7 @@ pip install -r requirements.txt
 ```
 
 ### 3. Frontend Setup
-Install frontend dependencies:
+Install frontend packages:
 ```bash
 cd frontend
 npm install
@@ -35,8 +46,8 @@ cd ..
 
 ### 4. Running the Development Servers
 
-#### Option A: Quick-launch scripts
-- **Windows**: Double-click `run_dev.bat` or execute in terminal:
+#### Option A: One-click launcher scripts
+- **Windows**: Double-click `run_dev.bat` or run:
   ```cmd
   run_dev.bat
   ```
@@ -46,7 +57,7 @@ cd ..
   ./run_dev.sh
   ```
 
-#### Option B: Separate terminals
+#### Option B: Individual terminal sessions
 
 **Terminal 1 — Backend (FastAPI)**:
 ```bash
@@ -67,31 +78,19 @@ npm run dev
 
 ## Testing
 
-Run all unit and integration tests:
+Run all unit, access control, and integration tests:
 ```bash
 python -m pytest tests/ -v
 ```
 
 ---
 
-## Project Structure
+## Architecture & Portals
 
-```
-backend/
-  app/
-    db.py            # SQLite database with patient-scoping & append-only facts
-    llm.py           # Gemini JSON extraction with Pydantic validation & retry
-    main.py          # FastAPI application & REST endpoints
-    schema.py        # Shared clinical contract (v0.2.1)
-    ingest/          # PDF, DOCX, TXT & Gemini vision OCR parsers
-    extract/         # Extraction prompts & quote verification
-    normalize/       # Date, unit, and drug normalizers
-    flags/           # Clinical quality & safety flag rules
-    timeline/        # Medication timeline derivation
-    qa/              # Grounded Q&A and summary
-frontend/            # React + Vite mobile-responsive UI
-eval/                # Ground truth evaluation datasets
-data/
-  demo/              # Sample medical documents for demonstration
-  uploads/           # Patient-scoped uploaded documents
-```
+- **Shared Patient View (`PatientRecordView`)**: Built once and shared across both portals. Dynamically adapts controls based on role and access permissions (`owner`, `contribute`, or `view`).
+- **Access Control Matrix (`can_access`)**:
+  - **Owner**: Full access (`read`, `write`, `manage`).
+  - **Caretaker (contribute)**: Review records, view extracted text, and upload documents (`read`, `write`).
+  - **Caretaker (view)**: Read-only access to records (`read`). Uploading and caretaker management are disabled.
+  - **Stranger / Revoked**: Access denied (`403 Forbidden`).
+- **Ingestion Pipeline**: Digital PDF (`pypdf`), DOCX (`python-docx`), plain text with smart pagination (`RECORD #` and form feeds), and vision OCR for scanned pages.

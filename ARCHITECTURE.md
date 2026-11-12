@@ -41,7 +41,11 @@ eval/                        Person B  (ground truth, precision/recall, timing)
 data/demo/                   ALL (5 patients x 5+ docs, planted errors)
 ```
 
-## Data model (summary; full version in schema.py)
+## Data model (summary; full version in schema.py v0.3.0)
+User: `id, name, role (patient | caretaker), created_at`
+CaretakerLink: `id, patient_id, caretaker_user_id, permission (view | contribute), created_at, revoked_at`
+Patient: `id, name, owner_user_id, created_at`
+Document: `id, patient_id, filename, doc_type (lab_report|prescription|discharge_summary|other), uploaded_by, uploaded_at, page_count`
 Fact: `id, patient_id, type, name, value (float|str|None), unit, original_value, original_unit, dose, frequency, status, date, date_precision, negation, rejected, source{doc_id,page,quote}, confidence`
 - type: condition | medication | allergy | lab_result | procedure | event
 - status (meds): started | changed | stopped | current | unknown
@@ -49,24 +53,38 @@ Fact: `id, patient_id, type, name, value (float|str|None), unit, original_value,
 - negation: true ONLY if the document explicitly says "no X". Absence is absence (not documented).
 - rejected: False by default; set to True by apply_correction() when a reviewer declares the fact is wrong. NEVER set by extraction.
 - Flags link to facts via Flag.fact_ids — Fact does NOT carry a flags list.
-Correction: `id, fact_id, corrected_by, new_fields, reason, rejected (bool), timestamp`. Effective fact = apply_correction(original, correction). If correction.rejected=True, effective fact gets rejected=True (fact declared WRONG). Original always kept.
+Correction: `id, fact_id, corrected_by (user_id), new_fields, reason, rejected (bool), timestamp`. Effective fact = apply_correction(original, correction). If correction.rejected=True, effective fact gets rejected=True (fact declared WRONG). Original always kept.
 Flag: `id, patient_id, kind, severity, fact_ids[], message`
 - kind: duplicate | contradiction | stale_medication | missing_date | missing_unit | unit_mismatch
-Patient: `id, name, created_at`
-Document: `id, patient_id, filename, doc_type (lab_report|prescription|discharge_summary|other), uploaded_at, page_count`
 
 **active_facts() rule**: timeline, flags, Q&A and summary MUST call active_facts() to filter out rejected facts before processing. The review screen bypasses this filter — rejected facts remain visible (struck-through) so the original source evidence is never lost.
 
+## Access control model (can_access)
+- Every route touching patient data checks `can_access(user, patient_id, need)` with `need` in `read`, `write`, `manage`:
+  - Patient owner: `read`, `write`, `manage`
+  - Active caretaker with permission `view`: `read` only
+  - Active caretaker with permission `contribute`: `read` + `write` (upload, submit corrections); no `manage`
+  - Revoked caretaker or stranger: 403 Forbidden
+- Identity: resolved exclusively from `X-User-Id` request header by `get_current_user`.
+
 ## API (contract between backend and frontend)
-- POST   /patients
-- POST   /patients/{pid}/documents          upload, triggers pipeline
-- GET    /patients/{pid}/facts
-- GET    /patients/{pid}/timeline
-- GET    /patients/{pid}/flags
-- GET    /patients/{pid}/summary
+- GET    /users                             demo user list for login
+- GET    /me/patients                       patients accessible to current user with granted permission
+- POST   /patients                          create patient owned by current user
+- GET    /patients/{pid}                    get patient record (read)
+- GET    /patients/{pid}/caretakers         list linked caretakers (manage: owner only)
+- POST   /patients/{pid}/caretakers         grant caretaker access (manage: owner only)
+- PATCH  /patients/{pid}/caretakers/{lid}   update caretaker permission (manage: owner only)
+- DELETE /patients/{pid}/caretakers/{lid}   revoke caretaker access (manage: owner only; sets revoked_at)
+- POST   /patients/{pid}/documents          upload & ingest document (write)
+- GET    /patients/{pid}/documents          list documents (read)
+- GET    /patients/{pid}/facts              list facts (read)
+- GET    /patients/{pid}/timeline           medication timeline (read)
+- GET    /patients/{pid}/flags              clinical quality flags (read)
+- GET    /patients/{pid}/summary            patient summary (read)
 - POST   /patients/{pid}/ask                {question} -> {answer, fact_ids, declined}
-- POST   /facts/{fid}/correct               creates a Correction
-- GET    /documents/{did}/page/{n}          raw page text for source popup
+- POST   /facts/{fid}/correct               creates a Correction (write)
+- GET    /documents/{did}/page/{n}          raw page text for source popup (read)
 
 ## Rules the code must enforce
 - Every fact has a verifiable quote. No quote match, no fact.
