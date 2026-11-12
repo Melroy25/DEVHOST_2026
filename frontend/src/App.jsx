@@ -15,14 +15,14 @@ import {
   RotateCw,
   FolderOpen,
   UserCheck,
-  Stethoscope,
   Eye,
   Edit3,
   CheckCircle2,
   AlertTriangle,
   FileUp,
   TrendingUp,
-  Settings
+  Settings,
+  ArrowRight
 } from 'lucide-react';
 
 export default function App() {
@@ -74,162 +74,178 @@ export default function App() {
 
   return (
     <div className="app-outer-canvas">
+      {/* Centered White Site Container (FyniteCare aesthetic) */}
       <div className="app-frame">
-        {/* Left Sidebar matching vertical gradient (#2F6F68 to #4FC9B2) */}
-        <aside className="app-sidebar">
-          <div>
-            <div className="sidebar-header">
-              <div className="sidebar-brand-icon">
-                <Stethoscope size={20} strokeWidth={2} />
+        {/* ===================================================================
+            NAVBAR (Height 85px, horizontal padding, logo + nav links + actions)
+            =================================================================== */}
+        <header className="app-navbar">
+          <div className="navbar-inner">
+            {/* Left: Logo (Green cross & leaves + Brand name) */}
+            <div className="brand-link" onClick={() => setActiveTab('documents')}>
+              <div className="brand-icon-leaf">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="13.5" y="4" width="5" height="15" rx="2" fill="#76A63F" />
+                  <rect x="8.5" y="9" width="15" height="5" rx="2" fill="#76A63F" />
+                  <path d="M16 26C16 26 11 25 8.5 20.5C6.5 16.5 9.5 14 12 15C14.5 16 15.5 19.5 16 26Z" fill="#76A63F" />
+                  <path d="M16 26C16 26 21 25 23.5 20.5C25.5 16.5 22.5 14 20 15C17.5 16 16.5 19.5 16 26Z" fill="#76A63F" />
+                </svg>
               </div>
-              <div>
-                <div className="sidebar-brand-title">One Patient</div>
-                <div className="sidebar-brand-sub">Many Records</div>
+              <div className="brand-text">
+                <span className="brand-text-black">One Patient</span>
+                <span className="brand-text-green">, Many Records</span>
               </div>
             </div>
 
-            <nav className="sidebar-nav">
+            {/* Center: Navigation Links with active 5px green dot */}
+            <nav className="nav-links-center">
               {!currentUser ? (
-                <button className="sidebar-nav-item active">
-                  <span className="sidebar-nav-icon"><Users size={16} strokeWidth={1.8} /></span>
+                <button className="nav-link-btn active">
                   <span>Demo Accounts</span>
+                  <span className="nav-active-dot" />
                 </button>
               ) : currentUser.role === 'patient' ? (
                 <>
                   <button
-                    className={`sidebar-nav-item ${activeTab === 'documents' ? 'active' : ''}`}
+                    className={`nav-link-btn ${activeTab === 'documents' ? 'active' : ''}`}
                     onClick={() => setActiveTab('documents')}
                   >
-                    <span className="sidebar-nav-icon"><FolderOpen size={16} strokeWidth={1.8} /></span>
                     <span>Documents & Pages</span>
+                    {activeTab === 'documents' && <span className="nav-active-dot" />}
                   </button>
 
                   <button
-                    className={`sidebar-nav-item ${activeTab === 'caretakers' ? 'active' : ''}`}
+                    className={`nav-link-btn ${activeTab === 'caretakers' ? 'active' : ''}`}
                     onClick={() => setActiveTab('caretakers')}
                   >
-                    <span className="sidebar-nav-icon"><UserCheck size={16} strokeWidth={1.8} /></span>
                     <span>Caretaker Access</span>
+                    {activeTab === 'caretakers' && <span className="nav-active-dot" />}
                   </button>
 
                   <button
-                    className={`sidebar-nav-item ${activeTab === 'clinical' ? 'active' : ''}`}
+                    className={`nav-link-btn ${activeTab === 'clinical' ? 'active' : ''}`}
                     onClick={() => setActiveTab('clinical')}
                   >
-                    <span className="sidebar-nav-icon"><Activity size={16} strokeWidth={1.8} /></span>
                     <span>Clinical Intelligence</span>
+                    {activeTab === 'clinical' && <span className="nav-active-dot" />}
                   </button>
                 </>
               ) : (
                 <>
                   <button
-                    className={`sidebar-nav-item ${activeTab === 'documents' ? 'active' : ''}`}
+                    className={`nav-link-btn ${activeTab === 'documents' ? 'active' : ''}`}
                     onClick={() => setActiveTab('documents')}
                   >
-                    <span className="sidebar-nav-icon"><FolderOpen size={16} strokeWidth={1.8} /></span>
                     <span>Records & Documents</span>
+                    {activeTab === 'documents' && <span className="nav-active-dot" />}
                   </button>
 
                   <button
-                    className={`sidebar-nav-item ${activeTab === 'clinical' ? 'active' : ''}`}
+                    className={`nav-link-btn ${activeTab === 'clinical' ? 'active' : ''}`}
                     onClick={() => setActiveTab('clinical')}
                   >
-                    <span className="sidebar-nav-icon"><Activity size={16} strokeWidth={1.8} /></span>
                     <span>Clinical Intelligence</span>
+                    {activeTab === 'clinical' && <span className="nav-active-dot" />}
                   </button>
                 </>
               )}
             </nav>
-          </div>
 
-          <div className="sidebar-footer">
-            <div className="sidebar-status-pill">
-              <span className={`status-dot-pulse ${health.status === 'online' ? '' : 'offline'}`}></span>
-              <span>Backend: {health.status === 'online' ? `Online (v${health.version || '0.3.0'})` : 'Offline'}</span>
-            </div>
-            <div className="sidebar-nav-item" style={{ cursor: 'default', opacity: 0.85 }}>
-              <span className="sidebar-nav-icon"><Settings size={15} strokeWidth={1.8} /></span>
-              <span style={{ fontSize: '11px' }}>Healthcare Core v0.3.0</span>
-            </div>
-          </div>
-        </aside>
+            {/* Right: Search + Status Badge + User Profile */}
+            <div className="navbar-right">
+              {/* Search box in header */}
+              <div className="navbar-search-box">
+                <Search size={14} color="#6B6B6B" strokeWidth={2} />
+                <input
+                  type="text"
+                  className="navbar-search-input"
+                  placeholder="Search records or files..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
 
-        {/* Main Content Area */}
-        <section className="app-main-area">
-          {/* Top Header Bar */}
-          <header className="top-header-bar">
-            <div className="header-left">
-              <h1 className="page-title">
-                {!currentUser ? 'Select Demo Account' : currentUser.role === 'patient' ? 'Patient Dashboard' : 'Caretaker Portal'}
-              </h1>
-              <p className="page-subtitle">Verified Clinical History & Multi-Source Intelligence</p>
-            </div>
+              {/* Backend Status indicator */}
+              <div className="stat-badge stat-badge-positive" title="FastAPI Backend Health">
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#76A63F' }}></span>
+                <span>{health.status === 'online' ? `Online (v${health.version || '0.3.0'})` : 'Offline'}</span>
+              </div>
 
-            {/* Pill-shaped search bar */}
-            <div className="header-search-box">
-              <span className="header-search-icon">
-                <Search size={16} strokeWidth={1.8} />
-              </span>
-              <input
-                type="text"
-                className="header-search-input"
-                placeholder="Search documents or records..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            {/* Header Right: notification & user profile badge */}
-            <div className="header-right">
-              <button className="header-icon-btn" title="System Notifications">
-                <Bell size={16} strokeWidth={1.8} />
-              </button>
-
-              {currentUser && (
-                <div className="header-user-chip">
-                  <div className="header-user-avatar">
+              {/* User Avatar Chip or Demo Pill */}
+              {currentUser ? (
+                <div className="nav-user-chip">
+                  <div className="nav-user-avatar">
                     {currentUser.name.charAt(0).toUpperCase()}
                   </div>
-                  <div className="header-user-meta">
-                    <span className="header-user-name">{currentUser.name}</span>
-                    <span className={`role-tag role-${currentUser.role}`}>{currentUser.role}</span>
-                  </div>
+                  <span className="nav-user-name">{currentUser.name}</span>
+                  <span className={`role-tag role-${currentUser.role}`}>{currentUser.role}</span>
                   <button
                     className="btn btn-secondary btn-xs"
                     onClick={handleLogout}
-                    title="Sign out of current demo session"
+                    title="Log out of current demo persona"
                   >
-                    <LogOut size={12} strokeWidth={2} />
+                    <LogOut size={11} strokeWidth={2.2} />
                     Log out
                   </button>
                 </div>
+              ) : (
+                <div className="stat-badge stat-badge-neutral">
+                  Demo Portals
+                </div>
               )}
             </div>
-          </header>
+          </div>
 
-          {/* Main App Router */}
-          <main>
-            {!currentUser ? (
-              <LoginScreen onLogin={handleLogin} health={health} />
-            ) : currentUser.role === 'patient' ? (
-              <PatientPortal
-                currentUser={currentUser}
-                health={health}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                searchQuery={searchQuery}
-              />
-            ) : (
-              <CaretakerPortal
-                currentUser={currentUser}
-                health={health}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                searchQuery={searchQuery}
-              />
-            )}
-          </main>
-        </section>
+          {/* 1px light gray divider line #DADADA inset 60px */}
+          <div className="navbar-divider" />
+        </header>
+
+        {/* ===================================================================
+            MAIN APP BODY
+            =================================================================== */}
+        <main className="app-content-body">
+          {/* Hero Badge Pill */}
+          <div className="hero-badge-pill">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#76A63F" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              <path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h6.28" />
+            </svg>
+            <span>Smart Healthcare, Just for You</span>
+          </div>
+
+          {/* Hero Title & Subtitle */}
+          <div className="hero-header-row">
+            <div>
+              <h1 className="hero-title-main">
+                Your Health, Our <span className="hero-title-green">Priority</span>
+              </h1>
+              <p className="hero-subtitle">
+                Advanced technology and compassionate care come together to deliver a healthier, happier you.
+              </p>
+            </div>
+          </div>
+
+          {/* Content Router */}
+          {!currentUser ? (
+            <LoginScreen onLogin={handleLogin} health={health} />
+          ) : currentUser.role === 'patient' ? (
+            <PatientPortal
+              currentUser={currentUser}
+              health={health}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              searchQuery={searchQuery}
+            />
+          ) : (
+            <CaretakerPortal
+              currentUser={currentUser}
+              health={health}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              searchQuery={searchQuery}
+            />
+          )}
+        </main>
       </div>
     </div>
   );
@@ -253,16 +269,16 @@ function LoginScreen({ onLogin, health }) {
 
   return (
     <div className="login-screen-wrapper">
-      {/* Stat Cards for Portal Overview */}
-      <div className="stat-cards-grid" style={{ marginBottom: '20px' }}>
+      {/* 4 Stat Cards */}
+      <div className="stat-cards-grid" style={{ marginBottom: '24px' }}>
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Demo Personas</span>
-            <div className="icon-chip-dark"><Users size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Users size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">{users.length || 3}</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive"><TrendingUp size={10} /> Active</span>
+            <span className="stat-badge stat-badge-positive"><TrendingUp size={10} /> Active</span>
             <span className="stat-subtext">Pre-seeded users</span>
           </div>
         </div>
@@ -270,35 +286,35 @@ function LoginScreen({ onLogin, health }) {
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Portal Roles</span>
-            <div className="icon-chip-dark"><Shield size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Shield size={16} strokeWidth={2.2} /></div>
           </div>
-          <div className="stat-card-number">2</div>
+          <div className="stat-card-number">2 Roles</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-neutral">Patient & Caretaker</span>
+            <span className="stat-badge stat-badge-neutral">Patient & Caretaker</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
-            <span className="stat-card-label">Security & RBAC</span>
-            <div className="icon-chip-dark"><CheckCircle2 size={16} strokeWidth={2} /></div>
+            <span className="stat-card-label">Access Control</span>
+            <div className="stat-icon-chip"><CheckCircle2 size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">v0.3.0</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive">Scoped Access</span>
+            <span className="stat-badge stat-badge-positive">RBAC Protected</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
-            <span className="stat-card-label">Backend Pipeline</span>
-            <div className="icon-chip-dark"><Activity size={16} strokeWidth={2} /></div>
+            <span className="stat-card-label">Pipeline Health</span>
+            <div className="stat-icon-chip"><Activity size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">
             {health.status === 'online' ? '100%' : 'Offline'}
           </div>
           <div className="stat-card-footer">
-            <span className={health.status === 'online' ? 'stat-badge-positive' : 'stat-badge-warning'}>
+            <span className={health.status === 'online' ? 'stat-badge stat-badge-positive' : 'stat-badge stat-badge-warning'}>
               {health.status === 'online' ? 'Optimal' : 'Checking'}
             </span>
             <span className="stat-subtext">Port 8000</span>
@@ -306,10 +322,12 @@ function LoginScreen({ onLogin, health }) {
         </div>
       </div>
 
-      <div className="card login-card">
-        <div className="card-header login-card-header">
-          <h2>Select Demo Account</h2>
-          <p className="muted-text">Choose a persona to explore the Patient or Caretaker portal</p>
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h2>Select Demo Persona</h2>
+            <p className="muted-text small">Choose an account to explore the Patient or Caretaker portal</p>
+          </div>
         </div>
         <div className="card-body">
           {loading ? (
@@ -336,8 +354,9 @@ function LoginScreen({ onLogin, health }) {
                         : 'Views or contributes to patient records shared by patients'}
                     </p>
                   </div>
-                  <button className="btn btn-primary btn-sm user-enter-btn">
-                    Enter as {u.name} →
+                  <button className="btn btn-primary btn-sm mt-4">
+                    <span>Enter as {u.name}</span>
+                    <ArrowRight size={13} strokeWidth={2.2} />
                   </button>
                 </div>
               ))}
@@ -478,51 +497,51 @@ function CaretakerPortal({ currentUser, health, activeTab, setActiveTab, searchQ
   return (
     <div className="portal-container caretaker-dashboard">
       {/* Stat Cards for Caretaker Overview */}
-      <div className="stat-cards-grid" style={{ marginBottom: '20px' }}>
+      <div className="stat-cards-grid" style={{ marginBottom: '24px' }}>
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Linked Patients</span>
-            <div className="icon-chip-dark"><Users size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Users size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">{sharedPatients.length}</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive"><TrendingUp size={10} /> Active</span>
+            <span className="stat-badge stat-badge-positive"><TrendingUp size={10} /> Active</span>
             <span className="stat-subtext">Authorized records</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
-            <span className="stat-card-label">Your Role</span>
-            <div className="icon-chip-dark"><UserCheck size={16} strokeWidth={2} /></div>
+            <span className="stat-card-label">Current Persona</span>
+            <div className="stat-icon-chip"><UserCheck size={16} strokeWidth={2.2} /></div>
           </div>
-          <div className="stat-card-number">Caretaker</div>
+          <div className="stat-card-number">{currentUser.name}</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-neutral">{currentUser.name}</span>
+            <span className="stat-badge stat-badge-neutral">Role: Caretaker</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
-            <span className="stat-card-label">Access Scopes</span>
-            <div className="icon-chip-dark"><Shield size={16} strokeWidth={2} /></div>
+            <span className="stat-card-label">Access Control</span>
+            <div className="stat-icon-chip"><Shield size={16} strokeWidth={2.2} /></div>
           </div>
-          <div className="stat-card-number">Patient-Scoped</div>
+          <div className="stat-card-number">Scoped</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive">Verified RBAC</span>
+            <span className="stat-badge stat-badge-positive">Verified RBAC</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Pipeline Health</span>
-            <div className="icon-chip-dark"><Activity size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Activity size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">
             {health.status === 'online' ? '100%' : 'Offline'}
           </div>
           <div className="stat-card-footer">
-            <span className={health.status === 'online' ? 'stat-badge-positive' : 'stat-badge-warning'}>
+            <span className={health.status === 'online' ? 'stat-badge stat-badge-positive' : 'stat-badge stat-badge-warning'}>
               {health.status === 'online' ? 'Optimal' : 'Checking'}
             </span>
             <span className="stat-subtext">v{health.version || '0.3.0'}</span>
@@ -575,7 +594,8 @@ function CaretakerPortal({ currentUser, health, activeTab, setActiveTab, searchQ
                         setSelectedPermission(permission);
                       }}
                     >
-                      Open Record →
+                      <span>Open Record</span>
+                      <ArrowRight size={13} strokeWidth={2.2} />
                     </button>
                   </div>
                 </div>
@@ -747,7 +767,7 @@ function PatientRecordView({
   const selectedDoc = documents.find(d => d.id === selectedDocId);
   const currentPage = docPages.find(p => p.page_no === selectedPageNo) || docPages[0];
 
-  // Filter documents by searchQuery if user typed in header search box
+  // Filter documents by searchQuery
   const filteredDocuments = documents.filter(doc =>
     doc.filename.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
     doc.doc_type.toLowerCase().includes((searchQuery || '').toLowerCase())
@@ -757,16 +777,16 @@ function PatientRecordView({
 
   return (
     <div className="patient-record-view">
-      {/* 4 Stat Cards across top matching exact screenshot format */}
-      <div className="stat-cards-grid" style={{ marginBottom: '20px' }}>
+      {/* 4 Stat Cards across top (FyniteCare design) */}
+      <div className="stat-cards-grid" style={{ marginBottom: '24px' }}>
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Uploaded Documents</span>
-            <div className="icon-chip-dark"><FileText size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><FileText size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">{documents.length}</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive"><TrendingUp size={10} /> +100% active</span>
+            <span className="stat-badge stat-badge-positive"><TrendingUp size={10} /> +100% active</span>
             <span className="stat-subtext">Ingested files</span>
           </div>
         </div>
@@ -774,25 +794,25 @@ function PatientRecordView({
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Extracted Pages</span>
-            <div className="icon-chip-dark"><Layers size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Layers size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">{totalPagesCount}</div>
           <div className="stat-card-footer">
-            <span className="stat-badge-neutral">OCR & Parsed</span>
-            <span className="stat-subtext">Ready for rules</span>
+            <span className="stat-badge stat-badge-neutral">OCR & Parsed</span>
+            <span className="stat-subtext">Multi-format verified</span>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Access Permission</span>
-            <div className="icon-chip-dark"><Shield size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Shield size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number" style={{ fontSize: '18px', textTransform: 'capitalize' }}>
             {permission}
           </div>
           <div className="stat-card-footer">
-            <span className="stat-badge-positive">Authorized</span>
+            <span className="stat-badge stat-badge-positive">Authorized</span>
             <span className="stat-subtext">{isOwner ? `${caretakers.length} linked` : 'RBAC Protected'}</span>
           </div>
         </div>
@@ -800,13 +820,13 @@ function PatientRecordView({
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">System Health</span>
-            <div className="icon-chip-dark"><Activity size={16} strokeWidth={2} /></div>
+            <div className="stat-icon-chip"><Activity size={16} strokeWidth={2.2} /></div>
           </div>
           <div className="stat-card-number">
             {health?.status === 'online' ? '100%' : 'Offline'}
           </div>
           <div className="stat-card-footer">
-            <span className={health?.status === 'online' ? 'stat-badge-positive' : 'stat-badge-warning'}>
+            <span className={health?.status === 'online' ? 'stat-badge stat-badge-positive' : 'stat-badge stat-badge-warning'}>
               {health?.status === 'online' ? 'Optimal' : 'Checking'}
             </span>
             <span className="stat-subtext">v{health?.version || '0.3.0'}</span>
@@ -918,7 +938,8 @@ function PatientRecordView({
                       disabled={uploading || !uploadFile}
                     >
                       <FileUp size={14} />
-                      {uploading ? 'Parsing & Saving...' : 'Upload & Ingest'}
+                      <span>{uploading ? 'Parsing & Saving...' : 'Upload & Ingest'}</span>
+                      <ArrowRight size={14} strokeWidth={2.4} />
                     </button>
                   </form>
                 </div>
@@ -954,7 +975,7 @@ function PatientRecordView({
                             onClick={() => setSelectedDocId(doc.id)}
                           >
                             <div className="doc-item-title">
-                              <span className="doc-icon"><FileText size={15} color="#0E5E56" /></span>
+                              <span className="doc-icon"><FileText size={15} color="#76A63F" /></span>
                               <span className="doc-name">{doc.filename}</span>
                             </div>
                             <div className="doc-meta-tags">
@@ -1050,15 +1071,19 @@ function PatientRecordView({
               <div className="card-body">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#5E7F7B' }}>Text Ingestion</span>
+                    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Text Ingestion</span>
                     <span className="badge badge-lab_report">Active</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#5E7F7B' }}>RBAC Scopes</span>
+                    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>RBAC Scopes</span>
                     <span className="badge badge-prescription">Enforced</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#5E7F7B' }}>Deterministic Engine</span>
+                    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Vision OCR</span>
+                    <span className="badge badge-perm-contribute">Active</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#6B6B6B' }}>Deterministic Engine</span>
                     <span className="badge badge-perm-view">Phase 1 Ready</span>
                   </div>
                 </div>
@@ -1142,7 +1167,7 @@ function PatientRecordView({
                           <div className="caretaker-link-info">
                             <span className="caretaker-avatar">🧑‍⚕️</span>
                             <div>
-                              <strong style={{ color: '#0F3D3A' }}>{name}</strong>
+                              <strong style={{ color: '#0A0A0A' }}>{name}</strong>
                               <div className="caretaker-perm-badge-row">
                                 <span className={`badge badge-perm-${link.permission}`}>
                                   {link.permission === 'view' ? '👁️ View Only' : '✏️ Can Contribute'}

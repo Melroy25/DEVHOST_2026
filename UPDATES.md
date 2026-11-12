@@ -23,6 +23,29 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 18:32 | Front-End / All | Restyled Core Web Application with FyniteCare Design System
+- What changed:
+  - **Preserved Core Application & Business Logic**:
+    - Retained 100% of the two-portal medical web application (`frontend/`), including demo persona login (Jhon, Maria, Sam), Patient Portal, Caretaker Portal, RBAC access checks, document ingestion, smart `.txt` pagination, and live Gemini Vision OCR.
+  - **Applied FyniteCare Design System**:
+    - Centralized design tokens in `frontend/src/index.css`: Primary green `#76A63F` (hover `#648F33`), Canvas `#EFEFEF`, Site `#FFFFFF`, Section `#F5F7EF`, Badge `#F2F6E8`, Divider `#DADADA`, Borders `#DCE6C8`.
+    - Integrated Google Font "Plus Jakarta Sans" with fallback to "Inter".
+    - Styled Navbar with medical cross-with-leaves SVG logo, active navigation indicator dot (5px primary green circle), pill-shaped header search box, and backend health status badge ("Online v0.3.0").
+    - Added "Smart Healthcare, Just for You" heart pill badge and "Your Health, Our Priority" hero headline with highlighted green "Priority".
+    - Restyled 4 metric stat cards with green rounded icon chips and pill badges.
+    - Preserved all interactive forms, buttons (with arrow slide interactions), document list selection, page text viewer, and caretaker access management controls.
+  - **Testing**:
+    - Automated browser verification passed with 0 console errors and 0 network failures (all 44 requests HTTP 200).
+    - Verified all flows for Patient Jhon and Caretaker Maria.
+- Files touched:
+  - `frontend/index.html`
+  - `frontend/src/App.jsx`
+  - `frontend/src/index.css`
+  - `UPDATES.md`
+- Schema or API impact: none
+- Needs from others: none
+- Next: Proceed to Phase 1 clinical extraction and verification.
+
 ### 2026-11-12 18:22 | Front-End / All | FyniteCare Pixel-Accurate Landing Page Built
 - What changed:
   - Scaffolded modern React + TypeScript + Vite project in `fynite-care/` with Tailwind CSS and Google Font "Plus Jakarta Sans".
