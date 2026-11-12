@@ -1,0 +1,9 @@
+﻿Patient: Alice Johnson
+DOB: 12/03/1965
+
+Diagnosis: Type 2 Diabetes Mellitus
+Medication: Metformin 500mg twice daily. Started March 2021.
+Allergy: Penicillin (rash)
+Lab: HbA1c 7.2% (March 2024)
+
+No known allergy to sulfa drugs.
