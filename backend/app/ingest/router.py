@@ -86,6 +86,8 @@ def ingest_document(
 
     if handler == "image":
         import os
+        from dotenv import load_dotenv  # noqa: PLC0415
+        load_dotenv()
         if not os.environ.get("GEMINI_API_KEY", "").strip():
             raise ValueError(
                 "Image and scan documents require GEMINI_API_KEY for vision OCR. "

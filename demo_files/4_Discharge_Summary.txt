@@ -1,0 +1,36 @@
+RECORD #1 - HOSPITAL ADMISSION & COURSE
+
+PATIENT NAME: Jhon Doe
+RECORD TYPE: Hospital Discharge Summary
+ADMISSION DATE: September 01, 2026
+DISCHARGE DATE: September 04, 2026
+ADMITTING DIAGNOSIS: Acute Bronchitis with Mild Exertional Dyspnea
+SECONDARY DIAGNOSES: Essential Hypertension, Type 2 Diabetes Mellitus
+
+HOSPITAL COURSE:
+The patient is a 46-year-old male who presented to the Emergency Department with a 3-day history of productive cough, wheezing, and low-grade pyrexia (99.8 F). Chest radiography demonstrated peribronchial thickening without focal alveolar consolidation or pleural effusion.
+
+During hospitalization, the patient received nebulized Albuterol/Ipratropium treatments, systemic corticosteroid taper (Prednisone 40mg daily x 3 days), and supplemental oxygen via nasal cannula. Respiratory symptoms improved significantly over 72 hours. By hospital day 3, oxygen saturation remained stable at 98% on room air.
+
+RECORD #2 - DISCHARGE MEDICATIONS & POST-ACUTE CARE PLAN
+
+DISCHARGE MEDICATIONS:
+1. Albuterol HFA 90mcg Inhalation Aerosol:
+   Inhale 2 puffs every 4 to 6 hours as needed for shortness of breath or wheezing.
+2. Lisinopril 10mg Oral Tablet:
+   Take 1 tablet daily in the morning for hypertension.
+3. Metformin 500mg Oral Tablet:
+   Take 1 tablet twice daily with morning and evening meals.
+4. Atorvastatin 20mg Oral Tablet:
+   Take 1 tablet once daily at bedtime.
+
+ALLERGIES & CONTRAINDICATIONS:
+- Penicillin: Severe allergic reaction (generalized hives). Avoid all penicillins and cephalosporins.
+
+FOLLOW-UP APPOINTMENTS:
+- Primary Care Clinic: Schedule follow-up appointment within 7-10 days of discharge.
+- Pulmonary Function Testing: Planned in 6 weeks if exertional symptoms persist.
+
+DISCHARGING PHYSICIAN:
+Dr. Elena Rostova, MD — Department of Hospital Medicine
+Valley Memorial Hospital

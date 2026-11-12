@@ -23,6 +23,27 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 18:10 | Person C / All | Demo Medical Documents Created for UI Upload Testing
+- What changed:
+  - Created dedicated `demo_files/` folder containing realistic clinical demo records for testing every supported format:
+    1. `demo_files/1_Lab_Report_Metabolic_Panel.pdf`: Multi-page clinical lab report with comprehensive metabolic and lipid panels.
+    2. `demo_files/2_Prescription_Outpatient.docx`: Word document with structured prescription orders (Metformin, Atorvastatin, Lisinopril) and allergy warnings.
+    3. `demo_files/3_Clinical_Scan_Note.png`: High-resolution medical consultation scan with vital signs, assessments, and orders for live vision OCR.
+    4. `demo_files/4_Discharge_Summary.txt`: Multi-page discharge summary demonstrating smart pagination (`RECORD #1`, `RECORD #2`).
+  - Synced files into `data/demo/` for test fixtures.
+  - Added `scripts/generate_demo_files.py` utility.
+  - Verified all 4 demo files ingest cleanly with text extraction and live Gemini Vision OCR.
+  - All 49 pytest tests passing.
+- Files touched:
+  - `demo_files/*`
+  - `data/demo/*`
+  - `scripts/generate_demo_files.py`
+  - `backend/app/ingest/router.py`
+  - `UPDATES.md`
+- Schema or API impact: none
+- Needs from others: none
+- Next: Proceed to Phase 1 extraction tasks A4–A6.
+
 ### 2026-11-12 18:05 | Person A / All | Gemini API Key Configured & Live Ingest Tested
 - What changed:
   - Configured `GEMINI_API_KEY` in `.env` (gitignored, per AGENTS.md Hard Rule #10).
