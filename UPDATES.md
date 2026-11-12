@@ -23,6 +23,30 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 18:00 | Person C / All | Healthcare Dashboard Theme Restyle (Theme-Only)
+- What changed:
+  - **Restyled Frontend Theme**:
+    - Centralized all palette colors, gradients, typography scale, radii, and shadows in `:root` CSS custom properties inside `frontend/src/index.css`.
+    - Implemented exact palette: canvas background `#BFE3E0`, surfaces `#FFFFFF` / `#F4FBFA`, mint tint `#E6F4F2`, vertical sidebar gradient `#2F6F68` to `#4FC9B2`, primary dark teal `#0E5E56`, primary accent teal `#14A38B`, deep teal `#0B524B`, heading `#0F3D3A`, muted body `#5E7F7B`, positive text `#1E9E74`, and status badges (Success `#D7F3E8` / `#17805E`, Warning `#FDF1D6` / `#B7791F`, Info `#DDEFF7` / `#22658C`).
+    - Styled outer app frame with 14px border radius and 16px padding on outer canvas.
+    - Added left vertical gradient sidebar with translucent white active pill, brand header, and pinned footer.
+    - Added top header bar with pill-shaped search filter input, notification icon, backend status pill, and user avatar chip.
+    - Added 4 stat cards with mint tint (#E6F4F2), 3px top accent border (#14A38B), and dark teal square icon chips displaying real application metrics (documents, pages, permissions, pipeline health).
+    - Added Promo / Call-to-action card with gradient `#2E7D72` to `#3DB7A0` and light button (`#CFEDE7` at 80% opacity, `#0E5E56` text).
+    - Preserved 100% of existing logic, text, routes, forms, API calls, and access controls.
+    - Installed `lucide-react` for stroke width 1.75-2 line icons matching target aesthetic.
+  - **Testing**:
+    - Verified `npm run build` succeeds in < 1s with 0 errors.
+    - Verified through automated browser agent: 0 console errors/warnings, all endpoints return HTTP 200, full interactive flows tested across patient and caretaker portals.
+- Files touched:
+  - `frontend/src/index.css`
+  - `frontend/src/App.jsx`
+  - `frontend/package.json`
+  - `UPDATES.md`
+- Schema or API impact: none (pure theme restyling)
+- Needs from others: none
+- Next: Ready for Phase 1 extraction tasks A4–A6.
+
 ### 2026-11-12 17:46 | All | Two-Portal System with Caretaker Access Control (Schema v0.3.0)
 - What changed:
   - **Schema bumped to v0.3.0 (agreed)**:
