@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-primary-green: #76A63F;
+  --color-primary-green-dark: #648F33;
+  --color-heading-black: #0A0A0A;
+  --color-body-gray: #2E2E2E;
+  --color-muted-gray: #6B6B6B;
+  --color-page-bg: #EFEFEF;
+  --color-site-bg: #FFFFFF;
+  --color-section-bg: #F5F7EF;
+  --color-badge-bg: #F2F6E8;
+  --color-badge-border: #DCE6C8;
+  --color-divider: #DADADA;
+}
+
+:root {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background-color: #EFEFEF;
+  color: #2E2E2E;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Floating animation keyframes for the 3 hero cards */
+@keyframes float-gentle-1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes float-gentle-2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes float-gentle-3 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float-1 {
+  animation: float-gentle-1 4.5s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-gentle-2 5.2s ease-in-out infinite 0.8s;
+}
+
+.animate-float-3 {
+  animation: float-gentle-3 4.8s ease-in-out infinite 1.6s;
+}
+
+/* Halftone dot pattern overlay in top-left */
+.halftone-overlay {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.45) 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+  mask-image: radial-gradient(circle at 15% 15%, black 20%, transparent 65%);
+  -webkit-mask-image: radial-gradient(circle at 15% 15%, black 20%, transparent 65%);
+}
+
+/* Custom button hover arrow translation */
+.btn-arrow-slide:hover .arrow-icon-circle {
+  transform: translateX(3px);
+}

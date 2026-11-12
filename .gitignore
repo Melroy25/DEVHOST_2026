@@ -30,6 +30,8 @@ data/uploads/
 # Node & Frontend
 node_modules/
 frontend/node_modules/
+fynite-care/node_modules/
+fynite-care/dist/
 frontend/dist/
 .npm/
 

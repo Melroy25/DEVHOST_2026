@@ -23,6 +23,25 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 18:22 | Front-End / All | FyniteCare Pixel-Accurate Landing Page Built
+- What changed:
+  - Scaffolded modern React + TypeScript + Vite project in `fynite-care/` with Tailwind CSS and Google Font "Plus Jakarta Sans".
+  - Configured exact design tokens: Primary green `#76A63F`, hover `#648F33`, heading `#0A0A0A`, body `#2E2E2E`, muted `#6B6B6B`, page background `#EFEFEF`, section background `#F5F7EF`, badge background `#F2F6E8`, divider `#DADADA`.
+  - Implemented pixel-perfect components matching the design screenshot:
+    - `Navbar`: FyniteCare logo (medical cross with plant leaves), centered nav links with active 5px green dot under "Home", pill-shaped "Book a Schedule" button with white right-arrow circle and green glow, 1px divider inset 60px.
+    - `Hero`:
+      - Left column: "Smart Healthcare, Just for You" heart pill badge, 72px H1 ("Your Health, Our Priority"), 20px subtitle, primary/secondary pill buttons, and 4K+ social proof row with 4 overlapping patient avatars.
+      - Right column: Hero image card with gradient (`#E6F6D2` to `#F6FCEC`), subtle halftone dot pattern, doctor photograph, and 3 floating glass cards with blur and staggered keyframe animations (Expert Doctors, Dr. Nusrat Rahman rating card, Your Health Companion badge).
+    - `WhyChooseUs`: Partially visible bottom section with "Why Choose Us" heading, green accent underline bar, and 3 rounded feature cards with green border and circular icons.
+  - Verified through automated browser agent: 0 console errors/warnings, all image assets loaded with HTTP 200, crisp floating cards with zero ghosting or background artifacts.
+- Files touched:
+  - `fynite-care/*`
+  - `.gitignore`
+  - `UPDATES.md`
+- Schema or API impact: none
+- Needs from others: none
+- Next: Ready for review and deployment.
+
 ### 2026-11-12 18:10 | Person C / All | Demo Medical Documents Created for UI Upload Testing
 - What changed:
   - Created dedicated `demo_files/` folder containing realistic clinical demo records for testing every supported format:
