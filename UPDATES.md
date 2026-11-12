@@ -23,6 +23,16 @@ Running log. Newest entry on top. Every person and every agent adds an entry aft
 
 ## Log
 
+### 2026-11-12 17:35 | Person C / All | Push to GitHub Repository
+- What changed:
+  - Added `.gitignore` protecting secrets (`.env`), SQLite databases (`data/records.db*`), uploaded files (`data/uploads/`), test caches, and `node_modules/`.
+  - Initialized git repository on branch `main` and set remote origin to `https://github.com/Melroy25/DEVHOST_2026.git`.
+  - Created initial commit and pushed branch `main` to `origin/main`.
+- Files touched: `.gitignore`, `UPDATES.md`
+- Schema or API impact: none
+- Needs from others: none
+- Next: Person A / B / C next phase tasks
+
 ### 2026-11-12 17:30 | Person C / All | Minimal Runnable Demo (C1 & C5)
 - What changed:
   - **Backend (`backend/app/main.py`)**:
